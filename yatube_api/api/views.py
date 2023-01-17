@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from rest_framework import filters
 
-from posts.models import Post, Group
+from posts.models import Post, Group, Follow
 from api.serializers import (PostSerializer, CommentSerializer,
                              GroupSerializer, FollowSerializer)
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
@@ -9,6 +9,7 @@ from .permissions import IsOwnerOrReadOnly
 from django.shortcuts import get_object_or_404
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework import permissions
+from rest_framework import generics
 
 
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
@@ -42,7 +43,8 @@ class CommentViewSet(viewsets.ModelViewSet):
         return self.get_post().comments.all()
 
 
-class FollowViewSet(viewsets.ModelViewSet):
+class FollowList(generics.ListCreateAPIView):
+    queryset = Follow.objects.all()
     serializer_class = FollowSerializer
     filter_backends = (filters.SearchFilter,)
     search_fields = ('following__username',)
